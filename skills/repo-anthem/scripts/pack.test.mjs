@@ -16,6 +16,8 @@ cover: a lit window in a dark office tower
 
 // 128 kbit/s MPEG-1 layer 3 frame header, then silence: 16000 bytes per second.
 const mp3 = (seconds) => Buffer.concat([Buffer.from([0xff, 0xfb, 0x90, 0x00]), Buffer.alloc(seconds * 16000 - 4)]);
+// The same, as MPEG-2 layer III at 160 kbit/s (what the speech models return): 20000 bytes per second.
+const mp3v2 = (seconds) => Buffer.concat([Buffer.from([0xff, 0xf3, 0xe4, 0xc0]), Buffer.alloc(seconds * 20000 - 4)]);
 const png = (w, h) => {
     const b = Buffer.alloc(33);
     Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]).copy(b);
@@ -60,6 +62,7 @@ test("mp3 length comes from the first frame and the size, and other files are re
     assert.equal(Math.round(mp3Seconds(mp3(30))), 30);
     const withTag = Buffer.concat([Buffer.from("ID3\u0004\u0000\u0000\u0000\u0000\u0000\u0004abcd"), mp3(20)]);
     assert.equal(Math.round(mp3Seconds(withTag)), 20);
+    assert.equal(Math.round(mp3Seconds(mp3v2(15))), 15);
     assert.equal(mp3Seconds(Buffer.from("<html>not audio</html>")), null);
 });
 

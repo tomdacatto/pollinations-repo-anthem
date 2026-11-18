@@ -36,8 +36,7 @@ export function parseBrief(markdown) {
 /** What is wrong with the brief, as sentences; an empty list means it is fine. */
 export function checkBrief(brief, root) {
     const problems = [];
-    for (const key of ["title", "mood", "tempo", "instruments", "cover"])
-        if (!brief[key]) problems.push(`The brief has no ${key}.`);
+    for (const key of ["title", "mood", "cover"]) if (!brief[key]) problems.push(`The brief has no ${key}.`);
     if (brief.quotes.length < 2 || brief.quotes.length > 4) problems.push("The brief needs 2 to 4 quotes.");
     const base = path.resolve(root);
     for (const q of brief.quotes) {
@@ -50,7 +49,11 @@ export function checkBrief(brief, root) {
     return problems;
 }
 
-const BITRATES = [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320]; // MPEG-1 layer 3, kbit/s
+// Layer III bitrates in kbit/s by frame-header index: MPEG-1 (44.1 and 48 kHz) and MPEG-2 or 2.5 (22 and 24 kHz).
+const BITRATES = {
+    1: [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320],
+    2: [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160],
+};
 
 /** Length of a constant-bitrate mp3 in seconds, from its first frame; null if it is not an mp3. */
 export function mp3Seconds(buffer) {
@@ -58,8 +61,9 @@ export function mp3Seconds(buffer) {
     if (buffer.subarray(0, 3).toString() === "ID3")
         at = 10 + ((buffer[6] << 21) | (buffer[7] << 14) | (buffer[8] << 7) | buffer[9]);
     for (let i = at; i < Math.min(buffer.length - 4, at + 4096); i++) {
-        if (buffer[i] !== 0xff || (buffer[i + 1] & 0xfe) !== 0xfa) continue; // MPEG-1 layer 3 frame sync
-        const kbps = BITRATES[buffer[i + 2] >> 4];
+        if (buffer[i] !== 0xff || (buffer[i + 1] & 0xe6) !== 0xe2) continue; // frame sync and layer III
+        const version = (buffer[i + 1] >> 3) & 3; // 3 = MPEG-1, 2 = MPEG-2, 0 = MPEG-2.5, 1 = reserved
+        const kbps = version === 1 ? 0 : BITRATES[version === 3 ? 1 : 2][buffer[i + 2] >> 4];
         if (!kbps) continue;
         return ((buffer.length - i) * 8) / (kbps * 1000);
     }
@@ -94,7 +98,7 @@ export function page(brief, seconds, cover = "cover.png") {
 <h1>${esc(brief.title)}</h1>
 <img src="${cover}" alt="${esc(brief.cover)}">
 <audio controls src="anthem.mp3"></audio>
-<p>${esc(brief.mood)}, ${esc(brief.tempo)}, ${esc(brief.instruments)}. About ${Math.round(seconds)} seconds.</p>
+<p>${[brief.mood, brief.tempo, brief.instruments].filter(Boolean).map(esc).join(", ")}. About ${Math.round(seconds)} seconds.</p>
 <h2>Why it sounds like this</h2>
 <ul>${quotes}</ul>
 `;
