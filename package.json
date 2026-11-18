@@ -1,0 +1,8 @@
+{
+    "name": "pollinations-repo-anthem",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "test": "node --test skills/repo-anthem/scripts/pack.test.mjs"
+    }
+}
