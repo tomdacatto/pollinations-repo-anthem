@@ -10,7 +10,7 @@ The page above is real output for [Stego Lab](https://github.com/tomdacatto/poll
 
 ## What is different
 
-Other creative skills take a one-line idea. This one starts from the repository, and **checks** that it did:
+Many creative skills start from a one-line idea. This one starts from the repository, and **checks** that it did:
 
 - The agent writes a short brief (mood, tempo, instruments, cover) with two to four **quotes**, each copied from a file of the repository with the file's path.
 - `scripts/pack.mjs` then looks every quote up in the file it names. A quote that is not there fails the run with the exact reason, so the song cannot claim a reason the repository does not give.

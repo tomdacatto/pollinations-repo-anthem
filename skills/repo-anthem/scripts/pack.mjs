@@ -9,7 +9,11 @@ const norm = (text) => text.replace(/\s+/g, " ").trim().toLowerCase();
 /** Reads the brief: title, fields and the quotes with the file each came from. */
 export function parseBrief(markdown) {
     const lines = markdown.split(/\r?\n/);
-    const title = lines.find((l) => l.startsWith("# "))?.slice(2).trim() ?? "";
+    const title =
+        lines
+            .find((l) => l.startsWith("# "))
+            ?.slice(2)
+            .trim() ?? "";
     const field = (name) =>
         lines
             .find((l) => l.toLowerCase().startsWith(`${name}:`))

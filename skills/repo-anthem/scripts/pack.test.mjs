@@ -31,7 +31,8 @@ function project(extra = {}) {
     fs.writeFileSync(path.join(root, "README.md"), "A tiny app.\nPay with your own Pollen, always.\n");
     fs.writeFileSync(path.join(root, "notes", "log.txt"), "fix the typo\n");
     const files = { "brief.md": BRIEF, "anthem.mp3": mp3(30), "cover.png": png(1024, 1024), ...extra };
-    for (const [name, data] of Object.entries(files)) if (data !== null) fs.writeFileSync(path.join(root, "anthem", name), data);
+    for (const [name, data] of Object.entries(files))
+        if (data !== null) fs.writeFileSync(path.join(root, "anthem", name), data);
     return root;
 }
 
