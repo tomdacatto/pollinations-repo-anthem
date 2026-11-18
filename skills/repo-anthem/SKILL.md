@@ -2,7 +2,7 @@
 name: repo-anthem
 description: Writes and produces a short theme song and cover art for the repository you are in, using Pollinations music and image models through the polli CLI. Use when the user asks for a theme song, anthem, jingle, soundtrack or album cover for a project, a repo, a README or a launch.
 license: MIT
-compatibility: Requires the polli CLI (npm i -g @pollinations/cli), a signed-in polli (polli auth login) with Pollen to spend, and Node 18+.
+compatibility: Requires the polli CLI (npm i -g @pollinations/cli), a signed-in polli (polli auth login), and Node 18+. The default path uses only free models; the optional music path needs paid Pollen.
 allowed-tools: Bash(polli *) Bash(node *) Bash(git log *) Read Write
 metadata:
   author: tomdacatto
@@ -30,21 +30,21 @@ Make a 20 to 30 second theme song and a cover for the repository you are in. The
    ```
 
    Give two to four quotes. Each is a reason for a choice: a line of the README that sets the mood, a line of a doc or source file that sets the pace. Quote files only, because the check reads the file named in the brackets. Copy the words character for character. Do not paraphrase.
-3. **Make the sound.** Music models are paid-only, so pick the path from what the user can spend:
-   - **Music** (the user has paid Pollen, check with `polli usage` and `polli models --type audio --json`): compose the prompt from the brief's mood, tempo and instruments, say it is instrumental, and run
-
-     ```bash
-     polli gen audio "<prompt>" --model elevenmusic --duration 30 --instrumental --output anthem/anthem.mp3
-     ```
-
-     Music is billed per second of output, so keep `--duration` at 30 or less unless the user asks for more.
-   - **Spoken** (free, for accounts with only free Pollen, or when `polli` answers 402 or says the model needs paid Pollen): drop `tempo` and `instruments` from the brief, add the `words:` line (two to four short lines about the project that use its own words), and run
+3. **Make the sound.** The default is free and needs no paid Pollen: a spoken anthem. A real song is the upgrade, because every Pollinations music model is paid-only.
+   - **Spoken (default, free)**: drop `tempo` and `instruments` from the brief, add the `words:` line (two to four short lines about the project that use its own words; write at least four lines if the first reading is under 10 seconds) and run
 
      ```bash
      polli gen audio "<the words>" --model openai/tts-1 --voice alloy --output anthem/anthem.mp3
      ```
 
-     `openai/tts-1` is free for every account (`paid_only` is false on `/v1/models`). The check wants 10 seconds or more, so write at least four lines if the first reading is shorter.
+     `openai/tts-1` is free for every account (`paid_only` is false on `/v1/models`).
+   - **Music (upgrade)**: only when the user asks for a real song and has paid Pollen (check `polli usage`). Compose the prompt from the brief's mood, tempo and instruments, say it is instrumental, and run
+
+     ```bash
+     polli gen audio "<prompt>" --model elevenmusic --duration 30 --instrumental --output anthem/anthem.mp3
+     ```
+
+     Music is billed per second of output, so keep `--duration` at 30 or less unless the user asks for more. If `polli` answers 402 or says the model needs paid Pollen, switch to the spoken path and say so.
 4. **Make the cover.** Run:
 
    ```bash
@@ -58,4 +58,3 @@ Make a 20 to 30 second theme song and a cover for the repository you are in. The
 - A quote that is not found: open the file, copy the real words and run the check again. Never edit the check.
 - `polli` says the key is missing or out of Pollen: stop and tell the user to run `polli auth login` or top up. Do not retry in a loop.
 - The model returned something that is not an mp3: say so, and do not pack it.
-- Music needs paid Pollen and the user has none: use the spoken path, and say that is what you did.

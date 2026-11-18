@@ -2,7 +2,7 @@
 
 [![Made with pollinations.ai](https://raw.githubusercontent.com/pollinations/pollinations/main/packages/ui/src/brand/badge-made-with.svg)](https://pollinations.ai/?ref=badge)
 
-An [Agent Skill](https://agentskills.io) that has your coding agent write and produce a theme song and a cover for the repository it is working in, with Pollinations music and image models through the [polli CLI](https://www.npmjs.com/package/@pollinations/cli). Pollinations quest [#20020](https://github.com/pollinations/pollinations/issues/20020).
+An [Agent Skill](https://agentskills.io) that has your coding agent write and produce a spoken theme (or, with paid Pollen, a song) and a cover for the repository it is working in, with Pollinations music and image models through the [polli CLI](https://www.npmjs.com/package/@pollinations/cli). Pollinations quest [#20020](https://github.com/pollinations/pollinations/issues/20020).
 
 ![The page the skill wrote for the Stego Lab repository: a dark blue landscape cover with a faint glowing symbol, and a player](docs/results.jpg)
 
@@ -27,12 +27,12 @@ polli auth login
 
 Then ask your agent: "write an anthem for this repo". The agent spends your own Pollen through your own login; nothing is stored in this repository.
 
-## Music, or a free spoken version
+## Free by default, music as an upgrade
 
-No Pollinations music model is free (`paid_only` is true for every one, checked on `/v1/models`), so the skill has two paths and picks by what the user can spend:
+No Pollinations music model is free (`paid_only` is true for every one, checked on `/v1/models`), so the default is a free **spoken** anthem and music is the upgrade:
 
-- **Music**, with paid Pollen: 30 seconds with `elevenmusic`, billed per second of output. The real run for the example (one 30 s song and one 1024x1024 `zimage` cover) used 0.079 Pollen in all, read from the key's budget before and after.
-- **Spoken**, free: a short spoken anthem of two to four lines in the project's own words, read by `openai/tts-1` (free for every account). It is the fallback when the account has no paid Pollen or `polli` answers 402. [`examples/stego-lab-spoken`](examples/stego-lab-spoken) is a real run of it: a 15 second reading, checked and packed by the same script.
+- **Spoken, the default**: a short anthem of two to four lines in the project's own words, read by `openai/tts-1`, which is free for every account. [`examples/stego-lab-spoken`](examples/stego-lab-spoken) is a real run of it: a 15 second reading, checked and packed by the same script.
+- **Music**, when the user asks for a song and has paid Pollen: 30 seconds with `elevenmusic`, billed per second of output. [`examples/stego-lab`](examples/stego-lab) is a real run (one 30 s song and one 1024x1024 `zimage` cover, 0.079 Pollen in all, read from the key's budget before and after). If `polli` answers 402 the skill falls back to the spoken path.
 
 ## Checking it
 
